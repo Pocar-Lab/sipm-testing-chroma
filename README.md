@@ -1,7 +1,7 @@
 # Chroma
 Contains all of the scripts used for the UMass Amherst version of Chroma light simulations for nEXO
 
-## Instructions
+## Instructions for Using GitHub
 ### Add New Users:
 Adding users to the organization will enable them to edit files on the repository. Everyone should have their own unique username and a password.
 
