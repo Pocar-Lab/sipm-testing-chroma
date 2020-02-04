@@ -19,7 +19,7 @@ Even if you're certain that you are working with the latest version, it is still
 ### After Editing
 1. Enter in the terminal:\
 ```git add .```\
-This adds all of the files in the branch to the commit. If you don't want to add all of the files you have changed to the commit you can enter:
+This adds all of the files in the branch to the commit. If you don't want to add all of the files you have changed to the commit you can enter:\
 ```git add <name of the files you want to add>```\
 As shown, the names of the files you do want to add to the commit replace the period in the original command.
 2. Enter in the terminal:\
@@ -52,4 +52,4 @@ Summary of Useful GitHub Commands:\
 `git status`\
 `git commit -m "summary of what you changed"`\
 `git push`\
-`git branch`\
+`git branch`
