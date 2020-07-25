@@ -9,11 +9,11 @@ import pickle
 
 start_begin = time.time() 
 print 
-print "====================================================================="
+print ("=====================================================================")
 arg_list = arg.main(sys.argv[1:])
-print "====================================================================="
-print "  Start Simulation				Done"
-print "====================================================================="
+print ("=====================================================================")
+print ("  Start Simulation				Done")
+print ("=====================================================================")
 #***************************************************************************
 
 #***************************************************************************
@@ -35,13 +35,13 @@ SpecularRef = 0
 noSeen = 0
 mean_photons_Seen = 0
 #***************************************************************************
-print "====================================================================="
-print "  Mesh Imports					Successful"
-print "====================================================================="
+print ("=====================================================================")
+print ("  Mesh Imports					Successful")
+print ("=====================================================================")
 #***************************************************************************
 umass.Usetup.flatten()
-if(arg_list[2]): # taking the terminal directive '-v' to view the assembly (via pygame) before simulating
-	view (umass.Usetup)
+#if(arg_list[2]): # taking the terminal directive '-v' to view the assembly (via pygame) before simulating
+	#view (umass.Usetup)
 umass.Usetup.bvh = load_bvh(umass.Usetup)		# Take these lines as standard syntax for importing a geometry from STL into the simulation
 sim = Simulation(umass.Usetup, seed=arg_list[5], geant4_processes=0)  #This is where you can add/remove seeding. To remove seeding just delete seed=1
 #***************************************************************************
@@ -51,7 +51,7 @@ numPhotons3 = 20000 #Numberof photons used for the distribution in cell plot #50
 
 
 "====================initializing root components======================"
-runs = 20
+runs = 1
 # How many times should the simulation run?
 photon_nr = array('d', [0])
 "====================start step by steps simulation===================="
@@ -319,23 +319,23 @@ std = np.sqrt(total_photons_seen)
 detectionEfficiencyStd = (std/(numPhotons*runs))
 
 print (np.sqrt(std**2/total_photons_seen))
-print "Photons detected Per Run", nr_hits
-print "Detected: 	", total_photons_seen, "+/-   ", str(round(std, 0))
-print "Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7))	
-print "Bulk absorb:      ", bulk
-print "Surface Absorption:   ",SurfaceAbs
-#print "RayleighScattering:    ",RayleighSct
-print "ReflectDiffusion:     ", ReflectDif
-print "Specular Reflect:    ", SpecularRef
-print "No photons interacted:   ", noSeen
-print "Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif
+print ("Photons detected Per Run", nr_hits)
+print ("Detected: 	", total_photons_seen, "+/-   ", str(round(std, 0)))
+print ("Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7)))	
+print ("Bulk absorb:      ", bulk)
+print ("Surface Absorption:   ",SurfaceAbs)
+print ("RayleighScattering:    ",RayleighSct)
+print ("ReflectDiffusion:     ", ReflectDif)
+print ("Specular Reflect:    ", SpecularRef)
+print ("No photons interacted:   ", noSeen)
+# print ("Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif )
 
 
 # finding the y location of the reflected photons to understand the geoy.
-ref1= photons.pos[SpecularReflection]
+#ref1 = photons.pos[SpecularReflection]
 
 #print ref1[:,1]
-
+#
 
 if(arg_list[3]):
 
@@ -412,16 +412,17 @@ if(arg_list[3]):
 				
 			else:
 				ax.plot(X,Y,Z, color='c')
-				ax.scatter(X,Y,Z , c='y', s=1)	
-		#else:  #This to show the track of undetected photons.
-		#	if (labelbool == False):
-		#		ax.plot(X,Y,Z, color='b', label='Undetected Photon Path')	
-		#		ax.scatter(X,Y,Z , c='r', s=1, label='Last known Position of Photon')
-		#		labelbool = True
+				ax.scatter(X,Y,Z , c='y', s=1)
 				
-		#	else:
-		#		ax.plot(X,Y,Z, color='b')
-		#		ax.scatter(X,Y,Z , c='r', s=1)	
+		else:  #This to show the track of undetected photons.
+			if (labelbool == False):
+				ax.plot(X,Y,Z, color='b', label='Undetected Photon Path')	
+				ax.scatter(X,Y,Z , c='r', s=1, label='Last known Position of Photon')
+				labelbool = True
+				
+			else:
+				ax.plot(X,Y,Z, color='b')
+				ax.scatter(X,Y,Z , c='r', s=1)	
 		
 	
 	
@@ -539,10 +540,14 @@ if(arg_list[3]):
 			totAngles.append(angles[i][j])
 		 	
 		
-	plot.histogram_2(totAngles,"Incident angles",1) #change to logscale
-	'''
+	plot.histogram_2(totAngles,"Incident angles", 1) #change to logscale
+	
 	#with open("bincount.txt", "wb") as fp:      #saves the list as string format
-		#pickle.dump(totAngles, fp)            
+		#pickle.dump(totAngles, fp)  
+
+'''          
+	
+	
 	with open("bincount.txt", "rb") as fp:       #retrieves the list and converts to int again 
 		prev_angle_bins=pickle.load(fp)
 	
@@ -555,7 +560,7 @@ if(arg_list[3]):
 	plt.ylabel('Counts', fontsize=20)
 	plt.title("Difference between Photons hitting the SiPM at different incident angles with LXe n=1.69 vs n=1.2", fontsize=20)
 	plt.show()
-	'''
+	
 	
 	
 	countsave1= np.bincount(np.int_(totAngles), weights=None, minlength=90) #outputs a list of the number of counts in each bin, BIN WIDTH MUST BE INTEGER
@@ -569,7 +574,7 @@ if(arg_list[3]):
 	#print countsave1
 	
 	neww=countsave1-prev_angle_bins
-	print neww
+	#print neww
 	it_x=np.arange(0,90)
 	#print it_x
 	y_pos=np.arange(len(it_x))
@@ -586,7 +591,7 @@ if(arg_list[3]):
 		
 	
 	
-'''
+
 # Making an array for the photons hitting SiPM for all runs to make the different plots below.
 vertex = np.array(vertex)
 vertexQQ = np.concatenate(vertex)
@@ -654,7 +659,7 @@ for i in range(len(stepAngles)):
 		z_high.append(z[i])
 		stepAngle_high.append(stepAngles[i])
 	#print stepAngle_high[i]
-print len(stepAngles)
+#print len(stepAngles)
 
 plt.scatter(x_high,z_high, s = 1, color = 'black')
 plt.xlabel('X position (mm)')
@@ -674,9 +679,9 @@ plt.ylabel('High Angles')
 plt.title('R position for High incident Angles')
 
 plt.show()
-'''
 
-'''
+
+
 #print r_high
 #print stepAngle_high
 
@@ -733,7 +738,7 @@ ax.title.set_fontsize(30)
 ax.legend(loc='best',fontsize = '14')
 
 plt.show()
-'''	
+'''		
 
 
 ################# END ##################################
@@ -741,10 +746,9 @@ plt.show()
 
 
 
-print "====================================================================="
-print "  Finish Simulation				Done" 
-print "  Time elapsed					", time.time()-start_begin, "sec" 
-print "====================================================================="
-print 
+print ("=====================================================================")
+print ("  Finish Simulation				Done") 
+print ("  Time elapsed					", time.time()-start_begin, "sec" )
+print ("=====================================================================")
 
 

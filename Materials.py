@@ -3,6 +3,9 @@ from chroma.geometry import Material, Solid, Surface
 import numpy as np
 #***************************************************************************
 #***************************************************************************
+sipm = Material('sipm')
+sipm.set('detection', 1)
+
 copper = Material('copper')
 copper.set('refractive_index', 0.97333) # 0.87 #https://refractiveindex.info/?shelf=main&book=Cu&page=Werner with wavelength 175nm extrapolated on TREND function excel
 copper.set('absorption_length',50) #1058100 
@@ -51,9 +54,9 @@ silicon.density = 2.329 #2.329
 
 #Test import, the values could be wrong.  more invistgation must be done!
 silica = Material('silica')
-silica.set('refractive_index', 1.61) # http://www.rit.edu/kgcoe/microsystems/lithography/thinfilms/cgi-bin/database.cgi?sio2_3_vuv.csv #1.61 #was 1.8 I changed it back to 1.61
-silica.set('absorption_length', 100)  #10cm the value from nEXO_MC #100
-silica.set('scattering_length', 1e6)  #no known real value
+silica.set('refractive_index', 1.69) # http://www.rit.edu/kgcoe/microsystems/lithography/thinfilms/cgi-bin/database.cgi?sio2_3_vuv.csv #1.61 #was 1.8 I changed it back to 1.61
+silica.set('absorption_length', 1e6)  #10cm the value from nEXO_MC #100
+silica.set('scattering_length', 350)  #no known real value
 silica.density = 2.2  #real value is 2.20
 silica.composition = {'silica' : 1.00}
 

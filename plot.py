@@ -81,7 +81,8 @@ def histogram_2(data, xlabel, bw):
 	#print bins, len(xentr), len(normdata)
 	#x = range(22)
 	#plt.plot(x,normdata)
-	plt.hist(data,bins = 90/bw , range=(0,90)) #normalization: density=True
+	bins = int(90/bw)
+	plt.hist(data, bins, range=(0,90)) #normalization: density=True
 	ax.set_xlabel('angles in Degrees',size=30)
 	ax.set_ylabel('Number of Occurrences',size=30)
 	ax.tick_params(axis = "x" , which = "major" , labelsize = 10)

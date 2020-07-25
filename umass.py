@@ -10,7 +10,7 @@ Usetup = Detector(mat.LXenon) # filled the volume with whatever material is appr
 Usetup.distance = 0 
 
 
-print "  Creating Blank LXe Setup:	importing LXE cell		Done"
+print ("  Creating Blank LXe Setup:	importing LXE cell		Done")
 path = "/home/lab/Desktop/New_parts_38mm/" # file path to the STL files of the assembly (something created in SolidWorks)
 path2 = "/home/lab/Desktop/LXe_cell_centered/" #the path to the corrected VUV4
 path3 = "/home/lab/Desktop/Chroma/UMass_Chroma/UMass/New_Cell/" #the path to the corrected VUV4
@@ -64,7 +64,7 @@ Usetup.add_solid(cS, displacement=(0,0,0))
 #updated code with the 38mm teflon reflector 
 
 e = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - Assem2-2 VUV4_Part-1.STL") # module #This is the photosensor area in our detector (6*6mm)
-eS = Solid(e, mat.silicon, mat.LXenon, data.bottom(e, surf.fulldetect, surf.steelSurface), data.bottom(e, red, blue2)) #mat internal => usually silicon
+eS = Solid(e, mat.silicon, mat.LXenon, data.bottom(e, surf.sipmsurface, surf.steelSurface), data.bottom(e, red, blue2)) #mat internal => usually silicon
 Usetup.add_pmt(eS, displacement=(0,0,0)) #this was displacement=(0,-0.5,0)
 
 '''
@@ -165,7 +165,7 @@ f = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - silica_window-1 sil
 fS = Solid(f, mat.copper, mat.LXenon, surf.CuSurface, blue)
 
 Usetup.add_solid(fS, displacement=(0,0,0))
-'''
+
 
 #Silica window (fused silica)
 
@@ -173,7 +173,7 @@ z = mesh_from_stl(path5+"20190619_cell_with_reflector_27mm - VPW42-Solidworks-2.
 zS = Solid(z, mat.silica, mat.LXenon, surf.silicaSurface, red)
 
 Usetup.add_solid(zS, displacement=(0,0,0))
-
+'''
 ###### end #######
 
 #***************************************************************************
