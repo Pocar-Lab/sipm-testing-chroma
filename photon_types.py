@@ -6,7 +6,7 @@ import photon_types as pht 		#import photon creation types
 import propagate_single as prop
 import plot as plot
 import datetime
-from itertools import izip
+#from itertools import zip
 
 
 # photon bomb, isotropic from position center
