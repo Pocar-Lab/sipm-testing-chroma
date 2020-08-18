@@ -1,6 +1,6 @@
 
 #!/usr/bin/env python
-from myimports_auto import *
+from myimports import *
 #from matplotlib import colors
 from array import array
 import pylab
@@ -25,7 +25,7 @@ import umass as umass 			#import components of UMass LXe Setup
 import photon_types as pht 		#import photon creation types 
 import propagate_single as prop
 import plot as plot
-import Surfaces_auto as Surfaces
+import Surfaces as Surfaces
 
 import datetime
 from matplotlib import colors 
@@ -39,9 +39,9 @@ SpecularRef = 0
 noSeen = 0
 mean_photons_Seen = 0
 #***************************************************************************
-print "====================================================================="
-print "  Mesh Imports					Successful"
-print "====================================================================="
+print ("=====================================================================")
+print ("  Mesh Imports					Successful")
+print ("=====================================================================")
 #***************************************************************************
 umass.Usetup.flatten()
 if(arg_list[2]): # taking the terminal directive '-v' to view the assembly (via pygame) before simulating
@@ -55,7 +55,7 @@ numPhotons3 = 20000 #Numberof photons used for the distribution in cell plot #50
 
 
 "====================initializing root components======================"
-runs = 20
+runs = 1
 # How many times should the simulation run?
 photon_nr = array('d', [0])
 "====================start step by steps simulation===================="
@@ -322,17 +322,19 @@ detectionEfficiency = (total_photons_seen/(numPhotons*runs))
 std = np.sqrt(total_photons_seen)
 detectionEfficiencyStd = (std/(numPhotons*runs))
 
+det_photons_error = round(std, 0)
+
 print (np.sqrt(std**2/total_photons_seen))
-print "Photons detected Per Run", nr_hits
-print "Detected: 	", total_photons_seen, "+/-   ", str(round(std, 0))
-print "Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7))	
-print "Bulk absorb:      ", bulk
-print "Surface Absorption:   ",SurfaceAbs
-#print "RayleighScattering:    ",RayleighSct
-print "ReflectDiffusion:     ", ReflectDif
-print "Specular Reflect:    ", SpecularRef
-print "No photons interacted:   ", noSeen
-print "Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif
+print ("Photons detected Per Run", nr_hits)
+print ("Detected: 	", total_photons_seen, "+/-   ", str(det_photons_error))
+print ("Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7)))
+# print "Bulk absorb:      ", bulk
+# print "Surface Absorption:   ",SurfaceAbs
+# print "RayleighScattering:    ",RayleighSct
+# print "ReflectDiffusion:     ", ReflectDif
+# print "Specular Reflect:    ", SpecularRef
+# print "No photons interacted:   ", noSeen
+# print "Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif
 
 
 # finding the y location of the reflected photons to understand the geoy.
@@ -545,26 +547,35 @@ if(arg_list[3]):
 
 
 #This function that returns the combination number depending on the refractive index values of liquid xenon and fused silica. 
-def get_combo_num(): 
-    if any(mat.LXenon.refractive_index[0] == 1.57) and any(mat.silica.refractive_index[0] == 1.59): 
-        return 1
-    elif any(mat.LXenon.refractive_index[0] == 1.69) and any(mat.silica.refractive_index[0] == 1.59): 
-        return 2
-    elif any(mat.LXenon.refractive_index[0] == 1.57) and any(mat.silica.refractive_index[0] == 1.61):
-        return 3
-    elif any(mat.LXenon.refractive_index[0] == 1.69) and any(mat.silica.refractive_index[0] == 1.61):
-        return 4
-    else: 
-        return 0
+# def get_combo_num(): 
+#     if any(mat.LXenon.refractive_index[0] == 1.57) and any(mat.silica.refractive_index[0] == 1.59): 
+#         return 1
+#     elif any(mat.LXenon.refractive_index[0] == 1.69) and any(mat.silica.refractive_index[0] == 1.59): 
+#         return 2
+#     elif any(mat.LXenon.refractive_index[0] == 1.57) and any(mat.silica.refractive_index[0] == 1.61):
+#         return 3
+#     elif any(mat.LXenon.refractive_index[0] == 1.69) and any(mat.silica.refractive_index[0] == 1.61):
+#         return 4
+#     else: 
+#         return 0
 
 
 
 #Creating a text file that saves the totAngles array
 #Filename is a variable that creates the name of the text files that are saved. The names are dependent on changing variables such as seed and refractive indices.
-filename = "seed" + str(arg_list[5]) + "-combo" + str(get_combo_num())
-with open('/home/chroma/Desktop/ChromaSim-Data/Ref_Index_Tests/{}.txt'.format(filename), 'w+') as f: 
-    for line in totAngles:
-        f.write("{}\n".format(line))
+# filename = "seed" + str(arg_list[5]) + "-combo" + str(get_combo_num())
+# with open('/home/chroma/Desktop/ChromaSim-Data/Ref_Index_Tests/{}.txt'.format(filename), 'w+') as f: 
+#     for line in totAngles:
+#         f.write("{}\n".format(line))
+
+filename1 = "seed" + str(arg_list[5]) + "_38mm_sep_angles"
+with open('/home/chroma/Desktop/ChromaSim-Data/Source-SiPM-Runs/{}.txt'.format(filename1), 'w+') as f:
+	for line in totAngles:
+		f.write("{}\n".format(line))
+
+filename2 = "det_photons_38mm"
+with open('/home/chroma/Desktop/ChromaSim-Data/Source-SiPM-Runs/{}.csv'.format(filename2), 'a+') as f:
+	f.write(f'{total_photons_seen},{det_photons_error}\n')
 
 
 #HERE IS WHAT YOU WRITE TO REFER TO THE OPTICAL ATRIBUTES OF THE MATERIALS: 
@@ -774,10 +785,9 @@ plt.show()
 
 
 
-print "====================================================================="
-print "  Finish Simulation				Done" 
-print "  Time elapsed					", time.time()-start_begin, "sec" 
-print "====================================================================="
-print 
+print ("=====================================================================")
+print ("  Finish Simulation				Done") 
+print ("  Time elapsed					", time.time()-start_begin, "sec")
+print ("=====================================================================")
 
 
