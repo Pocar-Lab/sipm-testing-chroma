@@ -8,8 +8,7 @@ import pandas as pd
 
 
 #***************************************************************************
-#Surface properties for the SiPM 
-fulldetect = Surface('fulldetect')			# detects everything that hits it
+#Surface properties for the SiPM 			
 #fulldetect.Absorption = 1.0  
 #fulldetect.fuSpecReflect = 0.3
 #fulldetect.fuDiffuseReflect= 0.15
@@ -21,7 +20,13 @@ fulldetect = Surface('fulldetect')			# detects everything that hits it
 #***************************************************************************
 # Functions needed for SiPM Reflection
 
-def SetSurface(fulldetect, Name): 
+
+class angledep:
+
+	def __init__(self, n):
+		self.name = n
+	
+	def SetSurface(self, Name): 
 		if Name == 'None':
 			return None 
 		else: 	
@@ -35,61 +40,54 @@ def SetSurface(fulldetect, Name):
 				'IndexOfRefractionIm':'k'}
 			Surf = chroma.geometry.Surface(Name)
 			Surf.name = Name
-			for x in fulldetect.Surfaces.keys(): 
-				if x in SurfaceKeys1.keys(): 
-					if x == 'Transmission': 
-						Surf.transmissive = self.OpticalParameters[Name][x]
-					elif x == 'Thickness': 
-						Surf.thickness = self.OpticalParameters[Name][x]
-					elif x == 'SurfaceModel': 
-						Surf.model = fulldetect.OpticalParameters[Name][x]
-						if Surf.model == 3:
-							Surf = fulldetect.ApplyReflectivityData(Surf)
-				elif x in SurfaceKeys2.keys(): 
-					if x in ['IndexOfRefractionRe', 'IndexOfRefractionIm']: 
-						if all(y in self.OpticalParameters[Name].keys() for y in ['IndexOfRefractionRe', 'IndexOfRefractionIm']): 
-							Surf.set(SurfaceKeys2[x], self.OpticalParameters[Name][x])
-						else:
-							continue 
-					else: 
-						Surf.set(SurfaceKeys2[x], self.OpticalParameters[Name][x])
-			# print(', '.join('%s: %s' % item for item in vars(Surf).items()))
-			return fulldetect
+		Surf.model = 3
+		Surf = self.ApplyReflectivityData(Surf)
+		return Surf
 
-def Interpolate(Data):
-	Angles = np.array(Data['AOI'])
-	Reflectivity = np.array(Data['Reflectivity'])
-	Transmittance = np.array(Data['Transmittance'])
-	AnglesInterpolate = np.linspace(0, 90, 90)
-	Reflectivity = np.interp(AnglesInterpolate, Angles, Reflectivity)
-	Transmittance = np.interp(AnglesInterpolate, Angles, Transmittance)
-	return AnglesInterpolate/180.0*np.pi, Reflectivity, Transmittance
+	def Interpolate(self, Data):
+		Angles = np.array(Data['AOI'])
+		Reflectivity = np.array(Data['Reflectivity'])
+		Transmittance = np.array(Data['Transmittance'])
+		AnglesInterpolate = np.linspace(0, 90, 91)	# Originally np.linspace(0, 90, 90)
+		Reflectivity = np.interp(AnglesInterpolate, Angles, Reflectivity)
+		Transmittance = np.interp(AnglesInterpolate, Angles, Transmittance)
+		return AnglesInterpolate, Reflectivity, Transmittance	# Originally AnglesInterpolate/180.0*np.pi
 
-def ApplyReflectivityData(fulldetect):
-	Data = pd.read_csv('~/Desktop/github-chroma/sipm-testing-chroma-master/VUV4/ReflectivityTransmittance_vs_AOI_VUV4_UA.csv')
-	Angles, Refl, Transm = Interpolate(Data)
+	def ApplyReflectivityData(self, Surface):
+		Data = pd.read_csv('~/Desktop/github-chroma/sipm-testing-chroma-master/VUV4/ReflectivityTransmittance_vs_AOI_VUV4_UA.csv')
+		Angles, Refl, Transm = self.Interpolate(Data)
 
-	Reflection = []
-	Transmission = []
-	for ii,angle in enumerate(Angles): 
-		reflect = np.tile(Refl[ii], len(chroma.geometry.standard_wavelengths))
-		reflect = np.array(list(zip(chroma.geometry.standard_wavelengths, reflect)), dtype=np.float32)
-		Reflection.append(reflect)
-		transmit = np.tile(Transm[ii], len(chroma.geometry.standard_wavelengths))
-		transmit = np.array(list(zip(chroma.geometry.standard_wavelengths, transmit)), dtype=np.float32)
-		Transmission.append(transmit)
-	angledep = chroma.geometry.DichroicProps(Angles, Reflection, Transmission)		
-	Surface.dichroic_props = angledep
-	return fulldetect
+		Reflection = []
+		Transmission = []
+		for ii,angle in enumerate(Angles): 
+			reflect = np.tile(Refl[ii], len(chroma.geometry.standard_wavelengths))
+			reflect = np.array(list(zip(chroma.geometry.standard_wavelengths, reflect)), dtype=np.float32)
+			Reflection.append(reflect)
+			transmit = np.tile(Transm[ii], len(chroma.geometry.standard_wavelengths))
+			transmit = np.array(list(zip(chroma.geometry.standard_wavelengths, transmit)), dtype=np.float32)
+			Transmission.append(transmit)
+		angledep = chroma.geometry.DichroicProps(Angles, Reflection, Transmission)		
+		Surface.dichroic_props = angledep
+		return Surface
 
-fulldetect = ApplyReflectivityData(fulldetect)
+# fulldetect.set('reflect_diffuse', ApplyReflectivityData(fulldetect))
+# fulldetect.set('reflect_specular', ApplyReflectivityData(fulldetect))
+
+reflective = Surface('reflective')
+refl = angledep('reflective')
+reflective = refl.SetSurface('reflective')
 #fulldetect.set('detect', 1)
-sipmsurface = Surface('sipmsurface')
-sipmsurface.set('detect', 1)
+sipm = Surface('sipm')
+sipm.set('detect', 1)
+
+#FullAbsorb surface for sipm 
+fullAbsorb = Surface('fullAbsorb')
+fullAbsorb.set('absorb', 1.0)
+fullAbsorb.set('eta', 1)
 #***************************************************************************
-CuSurface = Surface('CuSurface')			# tailored to the real parameters of copper at this temperature/wavelength light
-CuSurface.cuAbsorption = 0.95  #the most likely value is 35.8% ref for copper. Source:  #cu absorp-0.95
-CuSurface.cuSpecReflect =0.05 #refractiveindex.info/?shelf=main&book=Cu&page=Werner #originally 0.5, CuSurface.cuSpecReflect = rp.CuSpecRef #0.05
+CuSurface = Surface('CuSurface')			                        # tailored to the real parameters of copper at this temperature/wavelength light
+CuSurface.cuAbsorption = 0.95                                          #the most likely value is 35.8% ref for copper. Source:  #cu absorp-0.95
+CuSurface.cuSpecReflect =0.05                                         #refractiveindex.info/?shelf=main&book=Cu&page=Werner #originally 0.5, CuSurface.cuSpecReflect = rp.CuSpecRef #0.05
 CuSurface.cuDiffuseReflect= 0
 CuSurface.set('eta', 0.97333)
 CuSurface.set('k', 1.4735)
@@ -127,16 +125,14 @@ quartzSurface.transmissive = 1
 #ADDING SILICA INFO
 
 silicaSurface = Surface('silicaSurface')			
-#silicaSurface.set('absorb', 0.5)
 silicaSurface.set('reflect_diffuse', 0)
 silicaSurface.set('reflect_specular', 0.0) #0.2
-#silicaSurface.set('reemit', 0)
-silicaSurface.silicaEta = 1.69  
+silicaSurface.silicaEta = 1.58  
 silicaSurface.set('eta', silicaSurface.silicaEta) #Real value of therefractive index of the surface
 silicaSurface.transmissive = 1
 
 
-silicaSurface.model = 1 #Model = complex, discovered from geometry_types.h. Allows photons to pass through surfaces based on the refractive index of the material
+silicaSurface.model = 1          #Model = complex, discovered from geometry_types.h. Allows photons to pass through surfaces based on the refractive index of the material
 #Default model does not allow photons to pass through surfaces.
 
 #****************************************************************
