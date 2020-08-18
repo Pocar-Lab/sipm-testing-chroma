@@ -10,7 +10,7 @@ Usetup = Detector(mat.LXenon) # filled the volume with whatever material is appr
 Usetup.distance = 0 
 
 
-print "  Creating Blank LXe Setup:	importing LXE cell		Done"
+print ("  Creating Blank LXe Setup:	importing LXE cell		Done")
 path = "/home/lab/Desktop/New_parts_38mm/" # file path to the STL files of the assembly (something created in SolidWorks)
 path2 = "/home/lab/Desktop/LXe_cell_centered/" #the path to the corrected VUV4
 path3 = "/home/lab/Desktop/Chroma/UMass_Chroma/UMass/New_Cell/" #the path to the corrected VUV4
@@ -63,9 +63,15 @@ Usetup.add_solid(cS, displacement=(0,0,0))
 
 #updated code with the 38mm teflon reflector 
 
-e = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - Assem2-2 VUV4_Part-1.STL") # module #This is the photosensor area in our detector (6*6mm)
-eS = Solid(e, mat.silicon, mat.LXenon, data.bottom(e, surf.fulldetect, surf.steelSurface), data.bottom(e, red, blue2)) #mat internal => usually silicon
+e = mesh_from_stl(path4+"thin_sipm.stl") # module #This is the photosensor area in our detector (6*6mm)
+eS = Solid(e, mat.silicon, mat.quartz, data.bottom(e, surf.sipm, surf.fullAbsorb), data.bottom(e, red, blue2)) #mat internal => usually silicon
+# eS = Solid(e, mat.silicon, mat.LXenon, surf.sipm, blue2)
 Usetup.add_pmt(eS, displacement=(0,0,0)) #this was displacement=(0,-0.5,0)
+
+# Reflective surface over (or encasing) the SiPM
+refsurf = mesh_from_stl(path4+"sipm_quartz.stl")
+refsurfS = Solid(refsurf, mat.quartz, mat.LXenon, data.bottom(refsurf, surf.reflective, surf.fullAbsorb), yellow)
+Usetup.add_solid(refsurfS, displacement=(0,0,0))
 
 '''
 k = mesh_from_stl(path4+ "20190619_cell_with_reflector_38mm - Assem2-2 Pho S5-2.STL") # The base (something we do not need to worry about) \
@@ -104,7 +110,7 @@ Usetup.add_solid(pS, displacement=(0,0,0))
 
 q = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - Am-241-1 source_Am-241_part3-1.STL") 
 qS = Solid(q, mat.steel, mat.vacuum, surf.steelSurface, red)
-#Usetup.add_solid(qS, displacement=(0,0,0))
+# Usetup.add_solid(qS, displacement=(0,0,0))
 '''
 m = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - Am-241-1 Am-241_holder-2.STL")
 mS = Solid(m, mat.steel, mat.vacuum, surf.steelSurface, green)
@@ -165,7 +171,7 @@ f = mesh_from_stl(path4+"20190619_cell_with_reflector_38mm - silica_window-1 sil
 fS = Solid(f, mat.copper, mat.LXenon, surf.CuSurface, blue)
 
 Usetup.add_solid(fS, displacement=(0,0,0))
-'''
+
 
 #Silica window (fused silica)
 
@@ -173,7 +179,7 @@ z = mesh_from_stl(path5+"20190619_cell_with_reflector_27mm - VPW42-Solidworks-2.
 zS = Solid(z, mat.silica, mat.LXenon, surf.silicaSurface, red)
 
 Usetup.add_solid(zS, displacement=(0,0,0))
-
+'''
 ###### end #######
 
 #***************************************************************************

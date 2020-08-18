@@ -9,11 +9,11 @@ import pickle
 
 start_begin = time.time() 
 print 
-print "====================================================================="
+print ("=====================================================================")
 arg_list = arg.main(sys.argv[1:])
-print "====================================================================="
-print "  Start Simulation				Done"
-print "====================================================================="
+print ("=====================================================================")
+print ("  Start Simulation				Done")
+print ("=====================================================================")
 #***************************************************************************
 
 #***************************************************************************
@@ -35,23 +35,23 @@ SpecularRef = 0
 noSeen = 0
 mean_photons_Seen = 0
 #***************************************************************************
-print "====================================================================="
-print "  Mesh Imports					Successful"
-print "====================================================================="
+print ("=====================================================================")
+print ("  Mesh Imports					Successful")
+print ("=====================================================================")
 #***************************************************************************
 umass.Usetup.flatten()
 if(arg_list[2]): # taking the terminal directive '-v' to view the assembly (via pygame) before simulating
-	view (umass.Usetup)
+	view(umass.Usetup)
 umass.Usetup.bvh = load_bvh(umass.Usetup)		# Take these lines as standard syntax for importing a geometry from STL into the simulation
 sim = Simulation(umass.Usetup, seed=arg_list[5], geant4_processes=0)  #This is where you can add/remove seeding. To remove seeding just delete seed=1
 #***************************************************************************
 numPhotons = arg_list[0] #Number of photons used for the statistics and for the SiPM distribution plot
-numPhotons2 = 1500 #Number of photons used for the photon track plot #1500
+numPhotons2 = 1000000 #Number of photons used for the photon track plot #1500
 numPhotons3 = 20000 #Numberof photons used for the distribution in cell plot #5000
 
 
 "====================initializing root components======================"
-runs = 20
+runs = 1
 # How many times should the simulation run?
 photon_nr = array('d', [0])
 "====================start step by steps simulation===================="
@@ -60,6 +60,10 @@ doRandom = prop.getRandom() #random direction components for photons
 
 
 point_zero = data.get_center(umass.q)
+print(point_zero)
+
+sipm_loc = data.get_center(umass.refsurf)
+print(sipm_loc)
 
 #xyz coord of the point source
 point_zero[0] = point_zero[0]
@@ -319,23 +323,23 @@ std = np.sqrt(total_photons_seen)
 detectionEfficiencyStd = (std/(numPhotons*runs))
 
 print (np.sqrt(std**2/total_photons_seen))
-print "Photons detected Per Run", nr_hits
-print "Detected: 	", total_photons_seen, "+/-   ", str(round(std, 0))
-print "Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7))	
-print "Bulk absorb:      ", bulk
-print "Surface Absorption:   ",SurfaceAbs
-#print "RayleighScattering:    ",RayleighSct
-print "ReflectDiffusion:     ", ReflectDif
-print "Specular Reflect:    ", SpecularRef
-print "No photons interacted:   ", noSeen
-print "Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif
+print ("Photons detected Per Run", nr_hits)
+print ("Detected: 	", total_photons_seen, "+/-   ", str(round(std, 0)))
+print ("Detection Efficiency:   ", str(round(detectionEfficiency, 7)), "+/-   ", str(round(detectionEfficiencyStd, 7)))	
+print ("Bulk absorb:      ", bulk)
+print ("Surface Absorption:   ",SurfaceAbs)
+print ("RayleighScattering:    ",RayleighSct)
+print ("ReflectDiffusion:     ", ReflectDif)
+print ("Specular Reflect:    ", SpecularRef)
+print ("No photons interacted:   ", noSeen)
+# print ("Sum of detected+Bulk absorbed+surface absorbed+not interacted+ reflect diffusive = ", mean_photons_Seen+bulk+SurfaceAbs+noSeen+ReflectDif )
 
 
 # finding the y location of the reflected photons to understand the geoy.
-ref1= photons.pos[SpecularReflection]
+#ref1 = photons.pos[SpecularReflection]
 
 #print ref1[:,1]
-
+#
 
 if(arg_list[3]):
 
@@ -356,9 +360,10 @@ if(arg_list[3]):
 	ax.set_title('Photon Distribution on SiPM' + '\n' + datetime.date.today().strftime('%B %d, %Y') + '\n' + 'Simulated Photons = ' + str(numPhotons*runs))
 	ax.title.set_fontsize(25)
 	ax.legend(loc='best' , fontsize = 18)
-	textstr = '\n'.join(('Aluminum Filler: ' + str(surf.steelSurface.steelAbsorption*100) + '% absorbative', 'Fused Silica Window: Refractice Index = ' +str(surf.silicaSurface.silicaEta), 'Copper: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect'))
+	textstr = '\n'.join('source and sipm with angle dependant reflectivity')
+#textstr = '\n'.join(('Aluminum Filler: ' + str(surf.steelSurface.steelAbsorption*100) + '% absorbative', 'Fused Silica Window: Refractice Index = ' +str(surf.silicaSurface.silicaEta), 'Copper: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect'))
 	ax.text2D(0, 0.93, textstr, fontsize=14, transform=ax.transAxes)
-	plt.ylim(64.405, 65) #plt.ylim(35,60)
+	plt.ylim(62, 65.4) #plt.ylim(64.4, 65.4)
 	
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							
 																																																																																																																																																																																																																																																																																					
@@ -412,16 +417,17 @@ if(arg_list[3]):
 				
 			else:
 				ax.plot(X,Y,Z, color='c')
-				ax.scatter(X,Y,Z , c='y', s=1)	
-		#else:  #This to show the track of undetected photons.
-		#	if (labelbool == False):
-		#		ax.plot(X,Y,Z, color='b', label='Undetected Photon Path')	
-		#		ax.scatter(X,Y,Z , c='r', s=1, label='Last known Position of Photon')
-		#		labelbool = True
+				ax.scatter(X,Y,Z , c='y', s=1)
 				
-		#	else:
-		#		ax.plot(X,Y,Z, color='b')
-		#		ax.scatter(X,Y,Z , c='r', s=1)	
+		#else:  #This to show the track of undetected photons.
+			#if (labelbool == False):
+				#ax.plot(X,Y,Z, color='b', label='Undetected Photon Path')	
+				#ax.scatter(X,Y,Z , c='r', s=1, label='Last known Position of Photon')
+				#labelbool = True
+				
+			#else:
+				#ax.plot(X,Y,Z, color='b')
+				#ax.scatter(X,Y,Z , c='r', s=1)	
 		
 	
 	
@@ -430,7 +436,7 @@ if(arg_list[3]):
 	
 		
 
-	
+	'''
 	#Aluminum Filler Outline
 	theta = np.linspace(-1*np.pi, np.pi, 100)
 	Xval = 54*np.cos(theta)+88
@@ -445,21 +451,21 @@ if(arg_list[3]):
 	#ax.plot((55, 55), (30, 100), 40, color='k')
 	
 	#Fused Silica Window
-	Xval = 20*np.cos(theta)+88
-	Zval = 20*np.sin(theta)+88
-	Yval = 25+8+2.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='yellow', label='Fused Silica Window: Refractice Index = ' +str(surf.silicaSurface.silicaEta))
-	Xval = 20*np.cos(theta)+88
-	Zval = 20*np.sin(theta)+88
-	Yval = 29+8+2.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='yellow')
-	ax.plot((88, 88), (25+8+2.5, 29+8+2.5), 107, color='y')
+	#Xval = 20*np.cos(theta)+88
+	#Zval = 20*np.sin(theta)+88
+	#Yval = 25+8+2.5
+	#ax.plot(Xval, Zval, Yval, zdir='y', color='yellow')# label='Fused Silica Window: Refractice Index = ' +str(surf.silicaSurface.silicaEta))
+	#Xval = 20*np.cos(theta)+88
+	#Zval = 20*np.sin(theta)+88
+	#Yval = 29+8+2.5
+	#ax.plot(Xval, Zval, Yval, zdir='y', color='yellow')
+	#ax.plot((88, 88), (25+8+2.5, 29+8+2.5), 107, color='y')
 	ax.plot((88, 88), (25+8+2.5, 29+8+2.5), 69, color='y')
 	#Copper plates
 	Xval = 30*np.cos(theta)+88
 	Zval = 30*np.sin(theta)+88
 	Yval = 15+8+2.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='g', label='Copper Plate: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect')
+	ax.plot(Xval, Zval, Yval, zdir='y', color='g')# label='Copper Plate: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect')
 	Xval = 30*np.cos(theta)+88
 	Zval = 30*np.sin(theta)+88
 	Yval = 21+8+2.5
@@ -480,7 +486,7 @@ if(arg_list[3]):
 	Xval = 19*np.cos(theta)+88
 	Zval = 19*np.sin(theta)+88
 	Yval = 23+8+2.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='purple', label='Fused Silica Holder: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect')
+	ax.plot(Xval, Zval, Yval, zdir='y', color='purple')# label='Fused Silica Holder: '+str(surf.CuSurface.cuAbsorption*100)+'% absorb ' + str(surf.CuSurface.cuSpecReflect*100)+'% specular reflect')
 	Xval = 19*np.cos(theta)+88
 	Zval = 19*np.sin(theta)+88
 	Yval = 25+8+2.5
@@ -497,31 +503,31 @@ if(arg_list[3]):
 	ax.plot(Xval, Zval, Yval, zdir='y', color='purple')
 	ax.plot((88, 88), (29+8+2.5,31+8+2.5), 107, color='purple')
 	ax.plot((88, 88), (29+8+2.5,31+8+2.5), 69, color='purple')
-       
+       '''
 																																																																																																																																																																						
 																																																																																												
 	#Detector
 	ax.plot((85, 91), (65, 65), 91, color='orange')
 	ax.plot((85, 85), (65, 65), (85, 91), color='orange')
 	ax.plot((91, 91), (65, 65), (85, 91), color='orange')
-	
+	'''
 	#teflon reflector 
-	Xval = 18*np.cos(theta)+88
-	Zval = 18*np.sin(theta)+88
-	Yval = 31.5+8+2.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='blue', label='Teflon Reflector: '+str(surf.TefSurface.TefAbsorption*100)+'% absorb ' + str(surf.TefSurface.TefSpecReflect*100)+'% specular reflect')
-	Xval = 18*np.cos(theta)+88
-	Zval = 18*np.sin(theta)+88
-	Yval = 37+8+13.9-0.5
-	ax.plot(Xval, Zval, Yval, zdir='y', color='blue')
-	ax.plot((88, 88), (31.5+8+2.5,37+8+13.9-0.5), 106, color='blue')
-	ax.plot((88, 88), (31.5+8+2.5,37+8+13.9-0.5), 70, color='blue')
-	
+	#Xval = 18*np.cos(theta)+88
+	#Zval = 18*np.sin(theta)+88
+	#Yval = 31.5+8+2.5
+	#ax.plot(Xval, Zval, Yval, zdir='y', color='blue')# label='Teflon Reflector: '+str(surf.TefSurface.TefAbsorption*100)+'% absorb ' + str(surf.TefSurface.TefSpecReflect*100)+'% specular reflect')
+	#Xval = 18*np.cos(theta)+88
+	#Zval = 18*np.sin(theta)+88
+	#Yval = 37+8+13.9-0.5
+	#ax.plot(Xval, Zval, Yval, zdir='y', color='blue')
+	#ax.plot((88, 88), (31.5+8+2.5,37+8+13.9-0.5), 106, color='blue')
+	#ax.plot((88, 88), (31.5+8+2.5,37+8+13.9-0.5), 70, color='blue')
+	'''
 
 	ax.set_xlabel('X Label (mm)')
 	ax.set_ylabel('Y Label (mm)')
 	ax.set_zlabel('Z Label (mm)')
-	ax.set_ylim(22,58.9)
+	ax.set_ylim(22,65.5)
 	ax.set_xlim(50,130)
 	ax.set_zlim(50,130)
 	ax.view_init(elev=3., azim=0)
@@ -539,10 +545,14 @@ if(arg_list[3]):
 			totAngles.append(angles[i][j])
 		 	
 		
-	plot.histogram_2(totAngles,"Incident angles",1) #change to logscale
-	'''
+	plot.histogram_2(totAngles,"Incident angles", 1) #change to logscale
+	
 	#with open("bincount.txt", "wb") as fp:      #saves the list as string format
-		#pickle.dump(totAngles, fp)            
+		#pickle.dump(totAngles, fp)  
+
+'''          
+	
+	
 	with open("bincount.txt", "rb") as fp:       #retrieves the list and converts to int again 
 		prev_angle_bins=pickle.load(fp)
 	
@@ -555,7 +565,7 @@ if(arg_list[3]):
 	plt.ylabel('Counts', fontsize=20)
 	plt.title("Difference between Photons hitting the SiPM at different incident angles with LXe n=1.69 vs n=1.2", fontsize=20)
 	plt.show()
-	'''
+	
 	
 	
 	countsave1= np.bincount(np.int_(totAngles), weights=None, minlength=90) #outputs a list of the number of counts in each bin, BIN WIDTH MUST BE INTEGER
@@ -569,7 +579,7 @@ if(arg_list[3]):
 	#print countsave1
 	
 	neww=countsave1-prev_angle_bins
-	print neww
+	#print neww
 	it_x=np.arange(0,90)
 	#print it_x
 	y_pos=np.arange(len(it_x))
@@ -581,12 +591,12 @@ if(arg_list[3]):
 	plt.xticks(y_pos, it_x)
 	plt.show()
 	
-
+'''
 
 		
 	
 	
-'''
+
 # Making an array for the photons hitting SiPM for all runs to make the different plots below.
 vertex = np.array(vertex)
 vertexQQ = np.concatenate(vertex)
@@ -654,7 +664,7 @@ for i in range(len(stepAngles)):
 		z_high.append(z[i])
 		stepAngle_high.append(stepAngles[i])
 	#print stepAngle_high[i]
-print len(stepAngles)
+#print len(stepAngles)
 
 plt.scatter(x_high,z_high, s = 1, color = 'black')
 plt.xlabel('X position (mm)')
@@ -674,9 +684,9 @@ plt.ylabel('High Angles')
 plt.title('R position for High incident Angles')
 
 plt.show()
-'''
 
-'''
+
+
 #print r_high
 #print stepAngle_high
 
@@ -733,7 +743,7 @@ ax.title.set_fontsize(30)
 ax.legend(loc='best',fontsize = '14')
 
 plt.show()
-'''	
+		
 
 
 ################# END ##################################
@@ -741,10 +751,9 @@ plt.show()
 
 
 
-print "====================================================================="
-print "  Finish Simulation				Done" 
-print "  Time elapsed					", time.time()-start_begin, "sec" 
-print "====================================================================="
-print 
+print ("=====================================================================")
+print ("  Finish Simulation				Done") 
+print ("  Time elapsed					", time.time()-start_begin, "sec" )
+print ("=====================================================================")
 
 

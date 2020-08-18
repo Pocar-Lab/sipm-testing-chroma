@@ -3,6 +3,9 @@ from chroma.geometry import Material, Solid, Surface
 import numpy as np
 #***************************************************************************
 #***************************************************************************
+sipm = Material('sipm')
+sipm.set('detection', 1)
+
 copper = Material('copper')
 copper.set('refractive_index', 0.97333) # 0.87 #https://refractiveindex.info/?shelf=main&book=Cu&page=Werner with wavelength 175nm extrapolated on TREND function excel
 copper.set('absorption_length',50) #1058100 
@@ -25,11 +28,17 @@ LXenon.set('scattering_length', 350) #https://arxiv.org/pdf/physics/0407033.pdf 
 LXenon.density = 2.942 #2.942
 
 #***************************************************************************
+quartz = Material('quartz') #material inside the angle dependant surface of sipm 
+quartz.set('refractive_index', 1.69) #0
+quartz.set('absorption_length', 100)
+quartz.set('scattering_length', 100)
+
+#***************************************************************************
 fullAbsorb = Material('fullAbsorb')
 fullAbsorb.set('absorb', 1)
-fullAbsorb.set('refractive_index', 0) #0
-fullAbsorb.set('absorption_length', 0)
-fullAbsorb.set('scattering_length', 0)
+fullAbsorb.set('refractive_index', 1) #0
+fullAbsorb.set('absorption_length', 0.00000000001)
+fullAbsorb.set('scattering_length', 0.00000000001)
 fullAbsorb.density = 1
 #***************************************************************************
 #***************************************************************************
@@ -43,26 +52,26 @@ steel.density = 8.05 #8.05
 #***************************************************************************
 #***************************************************************************
 silicon = Material('silicon')
-silicon.set('refractive_index', 3.33) #3.33
-silicon.set('absorption_length', 364) #Nexo's, very debatable #364
-silicon.set('scattering_length', 400) #Nexo's, very debatable #400
+silicon.set('refractive_index', 1.05) #3.33
+silicon.set('absorption_length', 100) #Nexo's, very debatable #364
+silicon.set('scattering_length', 100) #Nexo's, very debatable #400
 silicon.density = 2.329 #2.329
 #***************************************************************************
 
 #Test import, the values could be wrong.  more invistgation must be done!
 silica = Material('silica')
-silica.set('refractive_index', 1.61) # http://www.rit.edu/kgcoe/microsystems/lithography/thinfilms/cgi-bin/database.cgi?sio2_3_vuv.csv #1.61 #was 1.8 I changed it back to 1.61
-silica.set('absorption_length', 100)  #10cm the value from nEXO_MC #100
-silica.set('scattering_length', 1e6)  #no known real value
-silica.density = 2.2  #real value is 2.20
+silica.set('refractive_index', 1.58)       # http://www.rit.edu/kgcoe/microsystems/lithography/thinfilms/cgi-bin/database.cgi?sio2_3_vuv.csv #1.61 #was 1.8 I changed it back to 1.61
+silica.set('absorption_length', 100)       #10cm the value from nEXO_MC #100
+silica.set('scattering_length', 350)       #no known real value
+silica.density = 2.2                        #real value is 2.20
 silica.composition = {'silica' : 1.00}
 
 
 #*********************************************************
 #*********************************************************
 Magiccopper = Material('Magiccopper')
-Magiccopper.set('refractive_index', 1.3) #1.3
-Magiccopper.set('absorption_length', 10000) #10000 from 0 8/9/18
+Magiccopper.set('refractive_index', 1.3)             #1.3
+Magiccopper.set('absorption_length', 10000)          #10000 from 0 8/9/18
 Magiccopper.set('scattering_length',1e6)
 Magiccopper.density = 8.96
 Magiccopper.composition = {'Cu' : 1.00}
